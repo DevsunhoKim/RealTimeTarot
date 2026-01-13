@@ -24,9 +24,9 @@ export async function POST(req: Request) {
     4. 내용: 추상적인 말은 빼고, 지금 당장 실천할 수 있는 구체적인 행동(Solution)을 제시하세요.
     5. 형식: 마크다운(##, **, 리스트 등)을 절대 사용하지 마세요. 오직 줄바꿈으로만 가독성을 높이세요.`;
 
-        // gemini-1.5-pro 모델 사용 (한국 지역에서 안정적으로 지원됨)
+        // gemini-2.5-flash 모델 사용 (성공 사례 확인됨)
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
