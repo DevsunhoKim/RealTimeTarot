@@ -26,9 +26,9 @@ export async function POST(req: Request) {
         4. 내용: 추상적인 말은 빼고, 지금 당장 실천할 수 있는 구체적인 행동(Solution)을 제시하세요.
         5. 형식: 마크다운(##, **, 리스트 등)을 절대 사용하지 마세요. 오직 줄바꿈으로만 가독성을 높이세요.`;
 
-        // Google Gemini REST API 호출 (v1 사용)
+        // Google Gemini REST API 호출 (v1beta 사용 - 모델 호환성이 더 높음)
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
             {
                 method: 'POST',
                 headers: {
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
                     }],
                     generationConfig: {
                         temperature: 0.7,
-                        maxOutputTokens: 2000,
+                        maxOutputTokens: 2048,
                     }
                 })
             }
@@ -57,8 +57,6 @@ export async function POST(req: Request) {
         }
 
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "해석을 생성하지 못했습니다.";
-
-        console.log("Generated text length:", text.length);
 
         return NextResponse.json({ reading: text });
     } catch (error: any) {
