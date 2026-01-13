@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 // Google Gemini API 클라이언트 초기화
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
+export const runtime = 'edge';
+
 export async function POST(req: Request) {
     try {
         const { cards } = await req.json();
