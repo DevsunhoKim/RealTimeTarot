@@ -43,6 +43,13 @@ export default function TarotReading() {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ cards: finalCards })
                     });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error("Server Error Details:", errorData);
+                        throw new Error(errorData.error || errorData.details || 'Failed to generate reading');
+                    }
+
                     const data = await response.json();
                     if (data.reading) {
                         setAiReading(data.reading);
@@ -50,9 +57,9 @@ export default function TarotReading() {
                         console.error(data.error);
                         setAiReading("죄송합니다. 운명의 목소리를 듣는데 잠시 문제가 생겼습니다. 다시 시도해주세요. (API Key 설정을 확인해주세요)");
                     }
-                } catch (error) {
+                } catch (error: any) {
                     console.error("Failed to fetch reading", error);
-                    setAiReading("운명을 읽어오는데 실패했습니다.");
+                    setAiReading(`운명을 읽어오는데 실패했습니다: ${error.message}`);
                 } finally {
                     setIsReadingLoading(false);
                 }
