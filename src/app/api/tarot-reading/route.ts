@@ -7,6 +7,7 @@ export async function POST(req: Request) {
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
+            console.error("Critical Error: GEMINI_API_KEY is missing.");
             return NextResponse.json({ error: "API 키가 설정되지 않았습니다." }, { status: 500 });
         }
 
@@ -25,9 +26,9 @@ export async function POST(req: Request) {
         4. 내용: 추상적인 말은 빼고, 지금 당장 실천할 수 있는 구체적인 행동(Solution)을 제시하세요.
         5. 형식: 마크다운(##, **, 리스트 등)을 절대 사용하지 마세요. 오직 줄바꿈으로만 가독성을 높이세요.`;
 
-        // Google Gemini REST API 직접 호출 (Cloudflare Edge 환경 호환성 극대화)
+        // Google Gemini REST API 호출 (v1 사용)
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
             {
                 method: 'POST',
                 headers: {
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
         const data = await response.json();
 
         if (!response.ok) {
-            console.error("Gemini API Error:", data);
+            console.error("Gemini API Error Detail:", JSON.stringify(data));
             return NextResponse.json({
                 error: "AI 서비스 응답 에러",
                 details: data.error?.message || "Unknown error"
@@ -56,6 +57,8 @@ export async function POST(req: Request) {
         }
 
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "해석을 생성하지 못했습니다.";
+
+        console.log("Generated text length:", text.length);
 
         return NextResponse.json({ reading: text });
     } catch (error: any) {
