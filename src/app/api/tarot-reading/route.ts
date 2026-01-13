@@ -1,62 +1,44 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-// Google Gemini API 클라이언트 초기화
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
     try {
-        const { cards } = await req.json();
+        const apiKey = process.env.GEMINI_API_KEY;
 
-        console.log("🧩 API Call Received");
-        console.log("🔑 API Key Loaded:", !!process.env.GEMINI_API_KEY); // true/false 확인
-
-        if (!process.env.GEMINI_API_KEY) {
-            console.error("❌ API Key is missing in process.env");
-            return NextResponse.json(
-                { error: "API Key not configured" },
-                { status: 500 }
-            );
+        if (!apiKey) {
+            console.error("Critical Error: GEMINI_API_KEY is missing in environment variables.");
+            return NextResponse.json({ error: "API key is not configured" }, { status: 500 });
         }
 
-        // 3장의 카드 정보를 포맷팅
-        const cardDescriptions = cards.map((card: any, index: number) => {
-            const position = index === 0 ? "과거" : index === 1 ? "현재" : "미래";
-            return `[${position}의 카드]: ${card.nameKr} (${card.name})`;
-        }).join("\n");
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const { cards } = await req.json();
 
-        const prompt = `
-      당신은 수만 명의 운명을 읽어온, 소름 돋을 정도로 날카롭고 통찰력 있는 ‘MZ 탑티어 타로 마스터’입니다. 
-      내담자가 뽑은 3장의 카드를 보고, 단순한 교과서적 해석이 아니라 실제 앞에서 상담하듯 생생하고 현실적인 이야기를 들려주세요.
-      
-      [내담자가 뽑은 운명의 카드]
-      ${cardDescriptions}
-      
-      [상담 지시사항 - 반드시 지킬 것]
-      1. 컨셉: '츤데레 마스터'. 딱딱한 격식보다는 친근하면서도 뼈를 때리는(팩폭) 직설적인 말투를 사용하세요. (~하네요, ~인 거죠, ~일 거예요 같은 구어체)
-      2. 서사 중심: 과거-현재-미래를 개별 카드로 보지 말고, 하나의 드라마처럼 연결하세요. "이런 과거 때문에 지금 이런 상황이고, 그래서 결국 이렇게 될 수밖에 없다"는 서사를 만드세요.
-      3. 분량과 깊이: 1000자 내외로 아주 상세하게. 내담자의 속마음이나 처한 상황을 마치 보고 있는 것처럼 디테일하게 묘사하세요.
-      4. 현실적 조언: 두루뭉술한 희망 고문은 금지. 지금 당장 뭘 해야 할지, 뭘 조심해야 할지 아주 구체적인 '행동 지침'을 주십시오.
-      5. 형식: 마크다운(##, **)은 절대 쓰지 마세요. 부드럽게 읽히는 줄글로 작성하되, 문단은 적절히 나누어 가독성을 높여주세요.
-      6. 시작은 소름 돋는 통찰 한 마디로, 끝은 내담자에게 힘이 되는 한 마디로 마무리하세요.
-    `;
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+        const prompt = `당신은 MZ 세대에게 인기 있는 탑티어 타로 마스터입니다. 
+        선택된 카드들: ${cards.map((c: any) => `${c.name} (${c.isReversed ? '역방향' : '정방향'})`).join(", ")}
+        
+        다음 지침을 엄격히 따라 해석을 작성하세요:
+        1. 콘셉트: '츤데레 마스터'. 말투는 반말과 존댓말을 섞어서(예: "왔어? 앉아봐.", "이건 좀 조심해야겠는데?"), 아주 솔직하고 직설적으로 '팩폭'을 날려주세요. 하트나 과한 이모지는 빼고 시니컬하면서도 신뢰감 있게 말하세요.
+        2. 구성: 과거-현재-미래의 흐름이 하나로 이어지는 '서사'가 있어야 합니다. 각 카드 설명을 따로 나열하지 마세요.
+        3. 분량: 공백 포함 800~1000자 정도로 아주 자세하게 작성하세요.
+        4. 내용: 추상적인 말은 빼고, 지금 당장 실천할 수 있는 구체적인 행동(Solution)을 제시하세요.
+        5. 형식: 마크다운(##, **, 리스트 등)을 절대 사용하지 마세요. 오직 줄바꿈으로만 가독성을 높이세요.`;
+
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
-        console.log("✅ Reading Generated Successfully. Length:", text.length);
-        console.log("📝 Preview:", text.substring(0, 50) + "...");
+
+        console.log("Generated text length:", text.length);
 
         return NextResponse.json({ reading: text });
-
-    } catch (error) {
-        console.error("Error generating tarot reading:", error);
-        return NextResponse.json(
-            { error: "Failed to generate reading" },
-            { status: 500 }
-        );
+    } catch (error: any) {
+        console.error("API Error:", error);
+        return NextResponse.json({
+            error: "Failed to generate reading",
+            details: error.message
+        }, { status: 500 });
     }
 }
