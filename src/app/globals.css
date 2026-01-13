@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Quicksand:wght@400;500;700&display=swap');
+
+:root {
+  --primary: #FFD700;
+  /* Gold */
+  --primary-glow: #FDB931;
+  --secondary: #6A0572;
+  /* Deep Purple */
+  --accent: #FF007C;
+  /* Magical Pink */
+  --background-dark: #0f172a;
+  /* Midnight Blue */
+  --card-back-bg: #1e1b4b;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  background-color: var(--background-dark);
+  color: white;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(106, 5, 114, 0.2) 0%, transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(255, 0, 124, 0.15) 0%, transparent 25%);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Utilities */
+.glass-panel {
+  background: var(--gradient-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 24px;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary {
+  background: var(--gradient-main);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(255, 90, 95, 0.4);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* --- Premium Card Back Design (Restored) --- */
+.card-back {
+  background-color: #1a1b2e;
+  /* Deep Midnight */
+  background-image:
+    linear-gradient(30deg, rgba(68, 76, 247, 0.4) 12%, transparent 12.5%, transparent 87%, rgba(68, 76, 247, 0.4) 87.5%, rgba(68, 76, 247, 0.4)),
+    linear-gradient(150deg, rgba(68, 76, 247, 0.4) 12%, transparent 12.5%, transparent 87%, rgba(68, 76, 247, 0.4) 87.5%, rgba(68, 76, 247, 0.4)),
+    radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.2) 0%, transparent 60%),
+    linear-gradient(to bottom, #10111a, #1a1b2e);
+  background-size: 20px 35px, 20px 35px, 100% 100%, 100% 100%;
+  border: 3px solid #FDB931 !important;
+  /* Gold Border Frame - Force Apply */
+  border-radius: 10px;
+  box-shadow:
+    inset 0 0 15px rgba(0, 0, 0, 0.9),
+    0 4px 8px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+  /* GPU 가속 활성화 */
+  transform: translateZ(0);
+}
+
+.card-back::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(253, 185, 49, 0.4);
+  border-radius: 6px;
+}
+
+.card-back::after {
+  content: '☀';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  background: linear-gradient(to bottom, #FFD700, #FDB931);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Fallback for no background-clip support */
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+  opacity: 0.9;
+}
+
+/* Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% -200%;
+  }
+
+  100% {
+    background-position: 200% 200%;
+  }
+}
+
+.card-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255, 215, 0, 0.2) 50%, transparent 60%);
+  background-size: 200% 200%;
+  animation: shimmer 3s infinite;
+  pointer-events: none;
+}
+
+/* --- 3D & Animations --- */
+.perspective-1000 {
+  perspective: 1200px;
+  /* Deeper perspective */
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.rotate-y-0 {
+  transform: rotateY(0deg);
+}
+
+/* Floating Animation */
+@keyframes float-slow {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-15px) rotate(1deg);
+  }
+}
+
+.animate-float {
+  animation: float-slow 6s ease-in-out infinite;
+}
