@@ -163,7 +163,7 @@ export default function TarotReading() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: [0, 1, 1, 0] }}
                         transition={{ duration: 3, times: [0, 0.2, 0.8, 1] }}
-                        className="fixed inset-0 z-[200] bg-white flex flex-col items-center justify-center pointer-events-none"
+                        className="fixed inset-0 z-[300] bg-white flex flex-col items-center justify-center pointer-events-none"
                     >
                         <motion.div
                             initial={{ scale: 0.8, opacity: 0 }}
