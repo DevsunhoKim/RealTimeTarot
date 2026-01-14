@@ -35,23 +35,43 @@ export default function TarotReading() {
 
     useEffect(() => {
         if (step === 'revealing' && finalCards.length === 3) {
-            const generateReading = () => {
+            const fetchReading = async () => {
                 setIsReadingLoading(true);
                 setAiReading("");
+                
                 try {
-                    // 클라이언트 사이드에서 운세 생성
-                    setTimeout(() => {
-                        const reading = generateTarotReading(finalCards);
-                        setAiReading(reading);
-                        setIsReadingLoading(false);
-                    }, 1500);
+                    // API를 먼저 시도
+                    const response = await fetch('/api/tarot-reading', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cards: finalCards })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.reading) {
+                            setAiReading(data.reading);
+                            setIsReadingLoading(false);
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.log("API 호출 실패, 클라이언트 사이드 생성으로 폴백:", error);
+                }
+
+                // API 실패 시 클라이언트 사이드에서 운세 생성 (토큰 소진 없음)
+                try {
+                    const reading = generateTarotReading(finalCards);
+                    setAiReading(reading);
                 } catch (error: any) {
                     console.error("Failed to generate reading", error);
                     setAiReading("운명을 읽어오는데 실패했습니다. 다시 시도해주세요.");
+                } finally {
                     setIsReadingLoading(false);
                 }
             };
-            setTimeout(generateReading, 2000);
+            
+            setTimeout(fetchReading, 2000);
         }
     }, [step, finalCards]);
 
