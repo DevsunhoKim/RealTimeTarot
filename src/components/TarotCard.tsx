@@ -14,8 +14,9 @@ export default function TarotCard({ card, isRevealed = true, onClick }: TarotCar
         <div
             onClick={onClick}
             className="relative w-full h-full perspective-1000 transition-all duration-500"
+            style={{ willChange: 'transform' }}
         >
-            <div className={`relative w-full h-full transition-transform duration-700 transform-style-3d ${isRevealed ? '' : 'rotate-y-180'}`}>
+            <div className={`relative w-full h-full transition-transform duration-700 transform-style-3d ${isRevealed ? 'rotate-y-0' : 'rotate-y-180'}`}>
 
                 {/* --- CARD FRONT --- */}
                 <div className="absolute inset-0 backface-hidden rounded-xl overflow-hidden shadow-2xl bg-white flex flex-col items-center">
@@ -24,6 +25,9 @@ export default function TarotCard({ card, isRevealed = true, onClick }: TarotCar
                             src={card.image}
                             alt={card.name}
                             className="w-full h-full object-cover"
+                            loading="lazy"
+                            decoding="async"
+                            style={{ willChange: 'auto' }}
                             onError={(e) => {
                                 (e.target as HTMLImageElement).src = `https://placehold.co/400x600/1e293b/FFD700?text=${card.nameKr}`;
                             }}
