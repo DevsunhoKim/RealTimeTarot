@@ -1,5 +1,6 @@
 "use client";
 
+// Auto-deployment test
 import React from 'react';
 import TarotReading from '@/components/TarotReading';
 import { TAROT_CARDS } from '@/data/tarotCards';
